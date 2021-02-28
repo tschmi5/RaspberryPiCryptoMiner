@@ -1,0 +1,60 @@
+---
+
+- name: Install Packages
+  hosts: all
+  become: no
+  vars:
+    packages_to_install: [git, build-essential, cmake, libuv1-dev, libssl-dev, libhwloc-dev]
+    wallet_addr: 45sSJpJmzWTfm5CYxjc3CejBG2nfaBStHgp8JPbRy9ndFVP5v2eKMQnCVp6B1A5rE7g5NvcUDJpJ9MjLsK1PPc3nDFBSm42
+
+  tasks:
+
+    # - name: Update
+    #   shell: apt-get clean all
+    #   become: yes
+
+    # - name: Update
+    #   shell: apt-get update -y
+    #   become: yes
+
+    # - name: Update
+    #   shell: apt-get clean all
+    #   become: yes
+
+    # - name: Install Packages
+    #   apt:
+    #     name: "{{ packages_to_install }}"
+    #     state: present
+    #   become: yes
+
+    # - name: Install Git Repo
+    #   git:
+    #     repo: 'https://github.com/xmrig/xmrig.git'
+    #     dest: /home/pi/xmrig
+
+    # - name: Make Volume Directory
+    #   file:
+    #     path: /home/pi/xmrig/build
+    #     state: directory
+
+    # - name: Run cmake
+    #   shell: cmake ..
+    #   args:
+    #     chdir: /home/pi/xmrig/build
+
+    # - name: Run make
+    #   shell: make
+    #   args:
+    #     chdir: /home/pi/xmrig/build
+
+    - name: Add Cron Job to run at start
+      cron:
+        name: "Start Cryptomining"
+        special_time: reboot
+        job: "nohup /home/pi/xmrig/build/xmrig -l /home/pi/miner.out --donate-level 1 -o pool.supportxmr.com:3333 -u {{ wallet_addr }} -p $(hostname) &"
+      become: yes
+    - name: Reboot
+      reboot:
+      become: yes
+
+      
